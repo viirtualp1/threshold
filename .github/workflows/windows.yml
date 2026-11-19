@@ -1,0 +1,47 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-x64:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Run simulation tests
+        run: cargo +stable test --locked
+
+      - name: Build the executable
+        run: cargo +stable build --release --locked
+
+      - name: Launch and present a frame on Direct3D 12
+        env:
+          WGPU_BACKEND: dx12
+          WGPU_DX12_COMPILER: fxc
+        run: |
+          $game = Start-Process -FilePath (Resolve-Path target/release/threshold.exe) `
+            -ArgumentList '--smoke-test' -PassThru `
+            -RedirectStandardError (Join-Path $env:RUNNER_TEMP 'threshold-stderr.log')
+          if (-not $game.WaitForExit(90000)) {
+            Stop-Process -Id $game.Id -Force
+            throw 'Threshold timed out before presenting a frame'
+          }
+          Get-Content (Join-Path $env:RUNNER_TEMP 'threshold-stderr.log')
+          if ($game.ExitCode -ne 0) {
+            throw "Threshold exited with code $($game.ExitCode)"
+          }
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Threshold-Windows-x64
+          path: target/release/threshold.exe
+          if-no-files-found: error
