@@ -4,7 +4,7 @@ A first-person Rust prototype set in an impossible apartment. Both doors in the 
 
 ## Play
 
-On Windows x64, download **Threshold-Windows-x64.zip** from the [releases page](https://github.com/viirtualp1/threshold/releases), extract it, and open **threshold.exe**. The Windows build uses Direct3D 12.
+On Windows x64, download **Threshold-Windows-x64.zip** from the [releases page](https://github.com/viirtualp1/threshold/releases), extract it, and open **threshold.exe**. The Windows build supports Direct3D 12 and Vulkan.
 
 To build from source on Windows or macOS, run Cargo from this folder. The Windows MSVC toolchain also needs the Visual Studio C++ build tools.
 

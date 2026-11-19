@@ -12,6 +12,8 @@ jobs:
   windows-x64:
     runs-on: windows-2025
     timeout-minutes: 20
+    env:
+      RUSTFLAGS: -C target-feature=+crt-static
     steps:
       - uses: actions/checkout@v6
         with:
